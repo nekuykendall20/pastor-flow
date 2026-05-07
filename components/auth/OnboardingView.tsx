@@ -58,18 +58,18 @@ export default function OnboardingView() {
       return;
     }
 
-    // Update profile
+    // Upsert profile (handles case where trigger didn't create the row)
     const { error: profileError } = await supabase
       .from('profiles')
-      .update({
+      .upsert({
+        id: user.id,
         name: name.trim(),
         title: title.trim() || 'Lead Pastor',
         role: 'owner',
         color,
         initials: getInitials(name),
         organization_id: org.id,
-      })
-      .eq('id', user.id);
+      });
 
     if (profileError) {
       setError(profileError.message);
