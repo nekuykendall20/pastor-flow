@@ -92,8 +92,7 @@ export default function OnboardingView() {
   }
 
   function handleFinish() {
-    router.push('/');
-    router.refresh();
+    window.location.href = '/';
   }
 
   return (
