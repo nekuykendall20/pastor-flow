@@ -140,19 +140,19 @@ export default function LoginView() {
         {/* Auth form — anchored at bottom of hero */}
         <div ref={formRef} className="flex justify-center px-4 pb-16 pt-2 shrink-0">
           <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl border border-white/10 p-6">
-            <p className="text-xs font-medium text-[oklch(0.18_0.02_150)]/40 text-center mb-4 tracking-wide uppercase">
-              {mode === 'signup' ? 'Create your account' : 'Welcome back'}
-            </p>
-
-            {/* Tabs */}
-            <div className="flex rounded-lg bg-[oklch(0.97_0.008_85)] p-1 mb-5">
+            {/* Tabs — sliding pill */}
+            <div className="relative grid grid-cols-2 rounded-xl bg-[oklch(0.955_0.008_85)] p-1 mb-5">
+              {/* The pill slides between the two tabs */}
+              <div
+                className={`absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-white rounded-lg shadow-sm pointer-events-none transition-transform duration-200 ease-out ${
+                  mode === 'signin' ? 'translate-x-full' : 'translate-x-0'
+                }`}
+              />
               <button
                 type="button"
                 onClick={() => { setMode('signup'); setError(''); }}
-                className={`flex-1 py-1.5 text-sm font-medium rounded-md transition ${
-                  mode === 'signup'
-                    ? 'bg-white text-[oklch(0.18_0.02_150)] shadow-sm'
-                    : 'text-[oklch(0.18_0.02_150)]/50 hover:text-[oklch(0.18_0.02_150)]/70'
+                className={`relative z-10 py-2 text-sm font-medium rounded-lg transition-colors duration-150 ${
+                  mode === 'signup' ? 'text-[oklch(0.18_0.02_150)]' : 'text-[oklch(0.18_0.02_150)]/45 hover:text-[oklch(0.18_0.02_150)]/65'
                 }`}
               >
                 Create account
@@ -160,10 +160,8 @@ export default function LoginView() {
               <button
                 type="button"
                 onClick={() => { setMode('signin'); setError(''); }}
-                className={`flex-1 py-1.5 text-sm font-medium rounded-md transition ${
-                  mode === 'signin'
-                    ? 'bg-white text-[oklch(0.18_0.02_150)] shadow-sm'
-                    : 'text-[oklch(0.18_0.02_150)]/50 hover:text-[oklch(0.18_0.02_150)]/70'
+                className={`relative z-10 py-2 text-sm font-medium rounded-lg transition-colors duration-150 ${
+                  mode === 'signin' ? 'text-[oklch(0.18_0.02_150)]' : 'text-[oklch(0.18_0.02_150)]/45 hover:text-[oklch(0.18_0.02_150)]/65'
                 }`}
               >
                 Sign in
