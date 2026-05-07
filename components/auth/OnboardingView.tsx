@@ -45,15 +45,17 @@ export default function OnboardingView() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setError('Session expired. Please sign in again.'); setLoading(false); return; }
 
-    // Create organization
-    const { data: org, error: orgError } = await supabase
-      .from('organizations')
-      .insert({ name: orgName.trim() })
-      .select()
-      .single();
+    // Generate org ID client-side so we don't need to SELECT it back
+    // (SELECT would fail because the org SELECT policy requires profile.organization_id to match,
+    //  which isn't set yet at this point in the flow)
+    const orgId = crypto.randomUUID();
 
-    if (orgError || !org) {
-      setError(orgError?.message ?? 'Failed to create organization.');
+    const { error: orgError } = await supabase
+      .from('organizations')
+      .insert({ id: orgId, name: orgName.trim() });
+
+    if (orgError) {
+      setError(orgError.message);
       setLoading(false);
       return;
     }
@@ -68,7 +70,7 @@ export default function OnboardingView() {
         role: 'owner',
         color,
         initials: getInitials(name),
-        organization_id: org.id,
+        organization_id: orgId,
       });
 
     if (profileError) {
