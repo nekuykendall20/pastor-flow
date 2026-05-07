@@ -285,10 +285,10 @@ export default function PeopleView() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-stone-800">People Care</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-stone-800">People Care</h1>
           <p className="text-stone-500 text-sm mt-0.5">Pastoral care and follow-up records</p>
         </div>
         <Button onClick={() => setAddOpen(true)} className="bg-[#4f7c5f] hover:bg-[#3d6b4e] text-white gap-2">
@@ -297,7 +297,7 @@ export default function PeopleView() {
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {CARE_STATUSES.filter(s => s !== 'Archived').map(status => {
           const count = people.filter(p => p.status === status).length;
           return (

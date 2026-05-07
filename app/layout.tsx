@@ -31,7 +31,7 @@ export default function RootLayout({
       <body className="h-full flex" suppressHydrationWarning>
         <AppProvider>
           <ConditionalSidebar />
-          <main className="flex-1 min-h-screen overflow-auto">
+          <main className="flex-1 min-h-screen overflow-auto pt-14 md:pt-0">
             {children}
           </main>
         </AppProvider>

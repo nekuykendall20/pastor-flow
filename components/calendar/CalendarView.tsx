@@ -273,16 +273,16 @@ export default function CalendarView() {
   }));
 
   return (
-    <div className="p-6 flex flex-col gap-5 h-full min-h-0">
+    <div className="p-4 md:p-6 flex flex-col gap-4 md:gap-5 h-full min-h-0">
       {/* Header */}
       <div className="flex items-center justify-between shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-stone-800">Calendar</h1>
-          <p className="text-stone-500 text-sm mt-0.5">Ministry schedule — tasks, follow-ups, sermons & prayer</p>
+          <h1 className="text-xl md:text-2xl font-bold text-stone-800">Calendar</h1>
+          <p className="text-stone-500 text-sm mt-0.5 hidden sm:block">Ministry schedule — tasks, follow-ups, sermons & prayer</p>
         </div>
         <div className="flex items-center gap-2">
-          {/* Legend */}
-          <div className="flex items-center gap-3 mr-3">
+          {/* Legend — hidden on mobile */}
+          <div className="hidden lg:flex items-center gap-3 mr-3">
             {kindCounts.map(({ kind, count }) => {
               const s = KIND_STYLES[kind];
               return (
@@ -302,9 +302,9 @@ export default function CalendarView() {
           </button>
           <button
             onClick={() => { setMonth(new Date()); setSelected(new Date()); }}
-            className="px-3 h-8 text-sm font-medium rounded-lg border border-stone-200 hover:bg-stone-50 transition-colors min-w-[130px] text-center"
+            className="px-3 h-8 text-sm font-medium rounded-lg border border-stone-200 hover:bg-stone-50 transition-colors min-w-[110px] md:min-w-[130px] text-center"
           >
-            {format(month, 'MMMM yyyy')}
+            {format(month, 'MMM yyyy')}
           </button>
           <button
             onClick={() => setMonth(addMonths(month, 1))}
@@ -321,7 +321,7 @@ export default function CalendarView() {
         </div>
       </div>
 
-      <div className="flex gap-5 flex-1 min-h-0">
+      <div className="flex flex-col md:flex-row gap-5 flex-1 min-h-0 overflow-y-auto md:overflow-hidden">
         {/* Calendar grid */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Day headers */}
@@ -349,7 +349,7 @@ export default function CalendarView() {
         </div>
 
         {/* Right panel: selected day OR upcoming agenda */}
-        <div className="w-72 shrink-0 flex flex-col gap-4">
+        <div className="md:w-72 shrink-0 flex flex-col gap-4">
           {selected ? (
             <DayPanel
               day={selected}

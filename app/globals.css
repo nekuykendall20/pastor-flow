@@ -134,3 +134,11 @@
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #d0ccc4; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #b5b0a8; }
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+.animate-slide-in-left {
+  animation: slide-in-left 0.22s ease-out;
+}

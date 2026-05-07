@@ -279,6 +279,7 @@ export default function TaskBoard() {
   const [search, setSearch] = useState('');
   const [filterCat, setFilterCat] = useState<string>('');
   const [filterPri, setFilterPri] = useState<string>('');
+  const [mobileCol, setMobileCol] = useState<TaskStatus>('Todo');
 
   const canCreate = true;
 
@@ -322,28 +323,28 @@ export default function TaskBoard() {
   };
 
   return (
-    <div className="p-6 h-full flex flex-col">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 md:p-6 h-full flex flex-col">
+      <div className="flex items-center justify-between mb-4 md:mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-stone-800">Tasks</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-stone-800">Tasks</h1>
           <p className="text-stone-500 text-sm mt-0.5">
             {state.orgViewEnabled ? 'Organization view' : 'My tasks'}
           </p>
         </div>
         <Button onClick={() => setAddOpen(true)} className="bg-[#4f7c5f] hover:bg-[#3d6b4e] text-white gap-2">
-          <Plus size={16} /> Add Task
+          <Plus size={16} /> <span className="hidden sm:inline">Add Task</span><span className="sm:hidden">Add</span>
         </Button>
       </div>
 
       {/* Filters */}
-      <div className="flex gap-3 mb-6 flex-wrap">
+      <div className="flex gap-2 md:gap-3 mb-4 md:mb-6 flex-wrap">
         <div className="relative">
           <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400" />
-          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search tasks..." className="pl-8 h-8 text-sm w-48" />
+          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search tasks..." className="pl-8 h-8 text-sm w-40 md:w-48" />
           {search && <button onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2"><X size={12} className="text-stone-400" /></button>}
         </div>
         <Select value={filterCat} onValueChange={v => setFilterCat(v ?? '')}>
-          <SelectTrigger className="h-8 text-sm w-36">
+          <SelectTrigger className="h-8 text-sm w-32 md:w-36">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -352,7 +353,7 @@ export default function TaskBoard() {
           </SelectContent>
         </Select>
         <Select value={filterPri} onValueChange={v => setFilterPri(v ?? '')}>
-          <SelectTrigger className="h-8 text-sm w-32">
+          <SelectTrigger className="h-8 text-sm w-28 md:w-32">
             <SelectValue placeholder="Priority" />
           </SelectTrigger>
           <SelectContent>
@@ -367,8 +368,58 @@ export default function TaskBoard() {
         )}
       </div>
 
-      {/* Kanban Board */}
-      <div className="flex gap-4 flex-1 overflow-x-auto pb-4 min-h-0">
+      {/* ── Mobile: tab selector + single-column list ── */}
+      <div className="md:hidden flex flex-col flex-1 min-h-0">
+        {/* Column tabs */}
+        <div className="flex border-b border-stone-200 mb-3 shrink-0">
+          {COLUMNS.map(col => (
+            <button
+              key={col.status}
+              onClick={() => setMobileCol(col.status)}
+              className={cn(
+                'flex-1 py-2.5 text-xs font-medium text-center transition-colors',
+                mobileCol === col.status
+                  ? 'text-[#4f7c5f] border-b-2 border-[#4f7c5f]'
+                  : 'text-stone-400 hover:text-stone-600'
+              )}
+            >
+              {col.label}
+              <span className={cn(
+                'ml-1 text-[10px] px-1.5 py-0.5 rounded-full',
+                mobileCol === col.status ? 'bg-[#4f7c5f]/10 text-[#4f7c5f]' : 'bg-stone-100 text-stone-400'
+              )}>
+                {getColumnTasks(col.status).length}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Single column task list */}
+        <div className="flex-1 overflow-y-auto pb-4">
+          <div className="space-y-2.5">
+            {getColumnTasks(mobileCol).length === 0 ? (
+              <div className="border-2 border-dashed border-stone-200 rounded-xl p-8 text-center mt-4">
+                <p className="text-sm text-stone-300">No tasks here</p>
+              </div>
+            ) : (
+              getColumnTasks(mobileCol).map(task => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  currentUserId={currentUser.id}
+                  currentUserRole={currentUser.role}
+                  onEdit={() => setEditTarget(task)}
+                  onDelete={() => removeTask(task.id)}
+                  onMove={(status) => editTask(task.id, { status })}
+                />
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Desktop: Kanban Board ── */}
+      <div className="hidden md:flex gap-4 flex-1 overflow-x-auto pb-4 min-h-0">
         {COLUMNS.map(col => {
           const colTasks = getColumnTasks(col.status);
           return (

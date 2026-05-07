@@ -118,7 +118,7 @@ export default function DashboardView() {
     .slice(0, 5);
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-4 md:p-8 max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-1">
@@ -127,7 +127,7 @@ export default function DashboardView() {
             {currentUser.initials}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-stone-800">
+            <h1 className="text-xl md:text-2xl font-bold text-stone-800">
               Good {today.getHours() < 12 ? 'morning' : today.getHours() < 17 ? 'afternoon' : 'evening'}, {currentUser.name.split(' ')[1] ?? currentUser.name.split(' ')[0]}.
             </h1>
             <p className="text-stone-500 text-sm">

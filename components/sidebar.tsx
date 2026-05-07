@@ -23,7 +23,7 @@ const navItems = [
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
   const { state, users, currentUser, setCurrentUser, setOrgView, signOut, orgMembers } = useApp();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -86,6 +86,7 @@ export default function Sidebar() {
             <Link
               key={href}
               href={href}
+              onClick={onClose}
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all mb-0.5 group',
                 active
