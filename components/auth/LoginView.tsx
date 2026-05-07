@@ -259,6 +259,46 @@ export default function LoginView() {
         </div>
       </section>
 
+      {/* ── Planning Center ── */}
+      <section className="px-6 py-16 max-w-4xl mx-auto">
+        <div className="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden">
+          <div className="flex flex-col md:flex-row">
+            {/* Left: text */}
+            <div className="flex-1 p-8 md:p-10">
+              <div className="inline-flex items-center gap-1.5 bg-[#6aaa7e]/10 text-[#4a8a5e] text-xs font-semibold px-3 py-1.5 rounded-full mb-5 uppercase tracking-wide">
+                Planning Center Integration
+              </div>
+              <h2 className="text-xl md:text-2xl font-bold text-[oklch(0.18_0.02_150)] tracking-tight mb-3 leading-snug">
+                Works alongside Planning Center,<br className="hidden md:block" /> not instead of it.
+              </h2>
+              <p className="text-[oklch(0.18_0.02_150)]/55 text-sm leading-relaxed mb-4">
+                Planning Center is great at what it does — scheduling volunteers, managing services, and engaging your congregation. Pastor Flow fills the gap it doesn&apos;t cover: the internal leadership layer where your team plans, prays, and shepherds together.
+              </p>
+              <p className="text-[oklch(0.18_0.02_150)]/55 text-sm leading-relaxed">
+                The Planning Center plug-in connects your two tools so you&apos;re never duplicating work. Pull in service dates for sermon prep, sync your team roster, and keep your ministry calendar aligned — all without leaving Pastor Flow.
+              </p>
+            </div>
+
+            {/* Right: callout */}
+            <div className="md:w-64 bg-[oklch(0.97_0.008_85)] border-t md:border-t-0 md:border-l border-black/5 p-8 flex flex-col justify-center gap-5">
+              {[
+                { label: 'Sermon dates', sub: 'Pulled from your PCO service schedule' },
+                { label: 'Team roster', sub: 'Sync staff from your PCO people list' },
+                { label: 'Ministry calendar', sub: 'Keep events aligned across both tools' },
+              ].map(({ label, sub }) => (
+                <div key={label} className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#6aaa7e] mt-1.5 shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold text-[oklch(0.18_0.02_150)]">{label}</p>
+                    <p className="text-xs text-[oklch(0.18_0.02_150)]/45 leading-relaxed">{sub}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA band ── */}
       <section className="bg-[#1c2b22] py-16 px-6 text-center">
         <p className="text-white/60 text-xs font-semibold uppercase tracking-widest mb-4">
