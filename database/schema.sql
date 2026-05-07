@@ -33,6 +33,11 @@ create policy "Owner can update their organization"
     )
   );
 
+create policy "Authenticated users can create organizations"
+  on organizations for insert
+  to authenticated
+  with check (true);
+
 -- ─────────────────────────────────────────
 -- PROFILES
 -- ─────────────────────────────────────────
@@ -50,17 +55,24 @@ create table profiles (
 
 alter table profiles enable row level security;
 
+-- Helper function: bypasses RLS to avoid infinite recursion in policies
+create or replace function get_my_org_id()
+returns uuid
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select organization_id from profiles where id = auth.uid()
+$$;
+
 create policy "Users can view own profile"
   on profiles for select
   using (id = auth.uid());
 
 create policy "Users can view org members"
   on profiles for select
-  using (
-    organization_id in (
-      select organization_id from profiles where id = auth.uid()
-    )
-  );
+  using (organization_id = get_my_org_id());
 
 create policy "Users can update own profile"
   on profiles for update
@@ -79,10 +91,11 @@ begin
     new.id,
     coalesce(new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)),
     upper(left(coalesce(new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)), 2))
-  );
+  )
+  on conflict (id) do nothing;
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = public;
 
 create trigger on_auth_user_created
   after insert on auth.users
