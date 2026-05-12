@@ -10,6 +10,7 @@ import type {
   TaskCategory, TaskPriority, TaskStatus, Visibility,
   CareCategory, CareStatus, SermonStatus, PrayerCategory, PrayerStatus,
 } from './types';
+import { DEFAULT_TASK_CATEGORIES } from './types';
 import type { Database } from './database.types';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
 
@@ -265,7 +266,7 @@ function SupabaseProvider({ children }: { children: React.ReactNode }) {
     weeklyRhythm: { weekOf: format(startOfWeek(new Date(), { weekStartsOn: 0 }), 'yyyy-MM-dd'), completedItems: [] },
     currentUserId: '',
     orgViewEnabled: false,
-    settings: { organizationName: 'My Church', theme: 'light' },
+    settings: { organizationName: 'My Church', theme: 'light', taskCategories: DEFAULT_TASK_CATEGORIES },
   };
 
   const [state, setState] = useState<AppState>(defaultState);
@@ -347,6 +348,9 @@ function SupabaseProvider({ children }: { children: React.ReactNode }) {
       settings: {
         organizationName: org?.name ?? 'My Church',
         theme: 'light',
+        taskCategories: (org?.task_categories && org.task_categories.length > 0)
+          ? org.task_categories
+          : DEFAULT_TASK_CATEGORIES,
       },
     });
 
@@ -639,9 +643,13 @@ function SupabaseProvider({ children }: { children: React.ReactNode }) {
   // ── Settings ──
   const saveSettings = useCallback((updates: Partial<OrgSettings>) => {
     setState(prev => ({ ...prev, settings: { ...prev.settings, ...updates } }));
-    if (updates.organizationName && organization) {
+    if (!organization) return;
+    if (updates.organizationName) {
       supabase.from('organizations').update({ name: updates.organizationName }).eq('id', organization.id);
       setOrganization(prev => prev ? { ...prev, name: updates.organizationName! } : prev);
+    }
+    if (updates.taskCategories) {
+      supabase.from('organizations').update({ task_categories: updates.taskCategories }).eq('id', organization.id);
     }
   }, [organization]);
 

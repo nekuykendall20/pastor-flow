@@ -1,6 +1,6 @@
 'use client';
 
-import { AppState, Task, Person, Sermon, PrayerRequest, RhythmItem, OrgSettings } from './types';
+import { AppState, Task, Person, Sermon, PrayerRequest, RhythmItem, OrgSettings, DEFAULT_TASK_CATEGORIES } from './types';
 import { USERS, SAMPLE_TASKS, SAMPLE_PEOPLE, SAMPLE_SERMONS, SAMPLE_PRAYER_REQUESTS, SAMPLE_RHYTHM_ITEMS } from './sample-data';
 import { format } from 'date-fns';
 
@@ -28,6 +28,7 @@ const DEFAULT_STATE: AppState = {
   settings: {
     organizationName: 'Grace Community Church',
     theme: 'light',
+    taskCategories: DEFAULT_TASK_CATEGORIES,
   },
 };
 
@@ -41,6 +42,10 @@ export function loadState(): AppState {
     const currentWeek = getWeekOf();
     if (parsed.weeklyRhythm.weekOf !== currentWeek) {
       parsed.weeklyRhythm = { weekOf: currentWeek, completedItems: [] };
+    }
+    // Backfill taskCategories for users who had data before this field existed
+    if (!parsed.settings.taskCategories) {
+      parsed.settings.taskCategories = DEFAULT_TASK_CATEGORIES;
     }
     return parsed;
   } catch {

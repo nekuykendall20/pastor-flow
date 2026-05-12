@@ -9,7 +9,12 @@ export interface User {
   color: string;
 }
 
-export type TaskCategory = 'Admin' | 'Sermon' | 'Care' | 'Staff' | 'Sunday Service' | 'Personal';
+// Open string type so orgs can define their own categories
+export type TaskCategory = string;
+
+export const DEFAULT_TASK_CATEGORIES: string[] = [
+  'Admin', 'Sermon', 'Care', 'Staff', 'Sunday Service', 'Personal',
+];
 export type TaskPriority = 'Low' | 'Medium' | 'High';
 export type TaskStatus = 'Todo' | 'In Progress' | 'Waiting' | 'Completed';
 export type Visibility = 'Private' | 'Organization';
@@ -114,6 +119,7 @@ export interface WeeklyRhythm {
 export interface OrgSettings {
   organizationName: string;
   theme: 'light' | 'dark';
+  taskCategories: string[];
 }
 
 export interface AppState {

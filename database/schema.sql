@@ -395,3 +395,17 @@ create trigger set_updated_at before update on rhythm_items
 -- ─────────────────────────────────────────
 -- Enable realtime for tasks (for live collaboration)
 alter publication supabase_realtime add table tasks;
+
+-- ─────────────────────────────────────────
+-- MIGRATION: Custom Task Categories
+-- Run this in the Supabase SQL editor to add
+-- per-organization customizable task categories.
+-- ─────────────────────────────────────────
+alter table organizations
+  add column if not exists task_categories text[]
+  default array['Admin','Sermon','Care','Staff','Sunday Service','Personal']::text[];
+
+-- Backfill any existing orgs that got a null default
+update organizations
+  set task_categories = array['Admin','Sermon','Care','Staff','Sunday Service','Personal']::text[]
+  where task_categories is null;

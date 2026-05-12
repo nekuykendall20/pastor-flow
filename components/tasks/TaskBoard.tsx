@@ -21,23 +21,43 @@ const COLUMNS: { status: TaskStatus; label: string; color: string }[] = [
   { status: 'Completed', label: 'Completed', color: 'bg-green-100 text-green-700' },
 ];
 
-const CATEGORIES: TaskCategory[] = ['Admin', 'Sermon', 'Care', 'Staff', 'Sunday Service', 'Personal'];
+// Categories are loaded dynamically from org settings (see TaskBoard component)
+const FALLBACK_CATEGORIES: string[] = ['Admin', 'Sermon', 'Care', 'Staff', 'Sunday Service', 'Personal'];
 const PRIORITIES: TaskPriority[] = ['Low', 'Medium', 'High'];
 
 function priorityColor(p: TaskPriority) {
   return p === 'High' ? 'bg-red-100 text-red-700' : p === 'Medium' ? 'bg-amber-100 text-amber-700' : 'bg-stone-100 text-stone-500';
 }
 
-function categoryColor(c: TaskCategory) {
-  const map: Record<TaskCategory, string> = {
-    Admin: 'bg-slate-100 text-slate-600',
-    Sermon: 'bg-purple-100 text-purple-700',
-    Care: 'bg-rose-100 text-rose-700',
-    Staff: 'bg-blue-100 text-blue-700',
-    'Sunday Service': 'bg-orange-100 text-orange-700',
-    Personal: 'bg-teal-100 text-teal-700',
-  };
-  return map[c];
+const CATEGORY_COLOR_MAP: Record<string, string> = {
+  Admin: 'bg-slate-100 text-slate-600',
+  Sermon: 'bg-purple-100 text-purple-700',
+  Care: 'bg-rose-100 text-rose-700',
+  Staff: 'bg-blue-100 text-blue-700',
+  'Sunday Service': 'bg-orange-100 text-orange-700',
+  Personal: 'bg-teal-100 text-teal-700',
+  // Youth / ministry categories
+  'School / Outreach': 'bg-green-100 text-green-700',
+  'Wednesday Event': 'bg-indigo-100 text-indigo-700',
+  Event: 'bg-pink-100 text-pink-700',
+  Camp: 'bg-amber-100 text-amber-700',
+  Mission: 'bg-cyan-100 text-cyan-700',
+};
+
+const FALLBACK_COLORS = [
+  'bg-violet-100 text-violet-700',
+  'bg-emerald-100 text-emerald-700',
+  'bg-sky-100 text-sky-700',
+  'bg-lime-100 text-lime-700',
+  'bg-fuchsia-100 text-fuchsia-700',
+  'bg-amber-100 text-amber-700',
+];
+
+function categoryColor(c: string): string {
+  if (CATEGORY_COLOR_MAP[c]) return CATEGORY_COLOR_MAP[c];
+  // Deterministic color for any custom category name
+  const idx = c.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0) % FALLBACK_COLORS.length;
+  return FALLBACK_COLORS[idx];
 }
 
 function UserAvatar({ userId }: { userId?: string }) {
@@ -87,7 +107,10 @@ function TaskFormDialog({
   title: string;
   currentUserId: string;
 }) {
-  const { users } = useApp();
+  const { users, state } = useApp();
+  const categories = state.settings.taskCategories?.length
+    ? state.settings.taskCategories
+    : FALLBACK_CATEGORIES;
   const [form, setForm] = useState<TaskFormData>({ ...EMPTY_FORM, ...initial });
   const set = (k: keyof TaskFormData, v: string | null) => setForm(f => ({ ...f, [k]: v ?? '' }));
 
@@ -115,7 +138,7 @@ function TaskFormDialog({
               <Select value={form.category} onValueChange={v => set('category', v)}>
                 <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -274,6 +297,9 @@ function TaskCard({ task, onEdit, onDelete, onMove, currentUserId, currentUserRo
 
 export default function TaskBoard() {
   const { state, myTasks, addTask, editTask, removeTask, currentUser } = useApp();
+  const categories = state.settings.taskCategories?.length
+    ? state.settings.taskCategories
+    : FALLBACK_CATEGORIES;
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Task | null>(null);
   const [search, setSearch] = useState('');
@@ -349,7 +375,7 @@ export default function TaskBoard() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="">All Categories</SelectItem>
-            {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={filterPri} onValueChange={v => setFilterPri(v ?? '')}>

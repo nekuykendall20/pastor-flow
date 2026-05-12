@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useApp } from '@/lib/supabase-context';
-import { Building2, User, Shield, Download, Plug, RefreshCw, Info, Link2, Users, BookOpen, CalendarDays, UsersRound, ClipboardCheck, CheckCircle2 } from 'lucide-react';
+import { Building2, User, Shield, Download, Plug, RefreshCw, Info, Link2, Users, BookOpen, CalendarDays, UsersRound, ClipboardCheck, CheckCircle2, Tag, Plus, X } from 'lucide-react';
+import { DEFAULT_TASK_CATEGORIES } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -160,6 +161,29 @@ export default function SettingsView() {
   const { state, saveSettings, currentUser, users, signOut } = useApp();
   const [orgName, setOrgName] = useState(state.settings.organizationName);
   const [saved, setSaved] = useState(false);
+  const [newCategory, setNewCategory] = useState('');
+  const [catSaved, setCatSaved] = useState(false);
+
+  const currentCategories = state.settings.taskCategories?.length
+    ? state.settings.taskCategories
+    : DEFAULT_TASK_CATEGORIES;
+
+  const addCategory = () => {
+    const trimmed = newCategory.trim();
+    if (!trimmed || currentCategories.includes(trimmed)) return;
+    saveSettings({ taskCategories: [...currentCategories, trimmed] });
+    setNewCategory('');
+    setCatSaved(true);
+    setTimeout(() => setCatSaved(false), 1500);
+  };
+
+  const removeCategory = (cat: string) => {
+    saveSettings({ taskCategories: currentCategories.filter(c => c !== cat) });
+  };
+
+  const resetCategories = () => {
+    saveSettings({ taskCategories: DEFAULT_TASK_CATEGORIES });
+  };
 
   const handleSave = () => {
     saveSettings({ organizationName: orgName });
@@ -209,6 +233,62 @@ export default function SettingsView() {
             <Button onClick={handleSave} className={cn("bg-[#4f7c5f] hover:bg-[#3d6b4e] text-white", saved && 'bg-green-600')}>
               {saved ? '✓ Saved' : 'Save Changes'}
             </Button>
+          </div>
+        </Section>
+
+        {/* Task Categories */}
+        <Section title="Task Categories" icon={Tag}>
+          <div className="space-y-4">
+            <p className="text-sm text-stone-500 leading-relaxed">
+              Customize the categories available when creating tasks. Changes apply to your whole organization — build a list that fits your ministry context.
+            </p>
+
+            {/* Category chips */}
+            <div className="flex flex-wrap gap-2">
+              {currentCategories.map(cat => (
+                <div
+                  key={cat}
+                  className="flex items-center gap-1.5 bg-stone-100 text-stone-700 pl-3 pr-1.5 py-1.5 rounded-full text-sm font-medium group"
+                >
+                  <span>{cat}</span>
+                  <button
+                    onClick={() => removeCategory(cat)}
+                    className="w-4 h-4 rounded-full bg-stone-300 hover:bg-red-400 text-white flex items-center justify-center transition-colors text-xs leading-none"
+                    title={`Remove ${cat}`}
+                  >
+                    <X size={9} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Add new category */}
+            <div className="flex gap-2 items-center">
+              <Input
+                placeholder="New category name..."
+                value={newCategory}
+                onChange={e => setNewCategory(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && addCategory()}
+                className="max-w-xs h-9"
+              />
+              <Button
+                onClick={addCategory}
+                disabled={!newCategory.trim() || currentCategories.includes(newCategory.trim())}
+                className="bg-[#4f7c5f] hover:bg-[#3d6b4e] text-white h-9 gap-1.5"
+              >
+                <Plus size={14} /> Add
+              </Button>
+              {catSaved && (
+                <span className="text-xs text-green-600 font-medium">✓ Saved</span>
+              )}
+            </div>
+
+            <button
+              onClick={resetCategories}
+              className="text-xs text-stone-400 hover:text-stone-600 underline underline-offset-2 transition-colors"
+            >
+              Reset to defaults
+            </button>
           </div>
         </Section>
 
